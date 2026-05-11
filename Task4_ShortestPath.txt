@@ -1,0 +1,89 @@
+========================================================
+  ADS Assignment 4 – Graphs
+  Task 4: Shortest Path – Edinburgh to Dundee
+  (Scottish Road Network, Dijkstra's Algorithm)
+========================================================
+
+Scottish Road Network (standard textbook version):
+Vertices and weighted edges (distances in miles, approx.):
+
+  Edinburgh  — Stirling      : 36
+  Edinburgh  — Perth         : 44
+  Edinburgh  — Kirkcaldy     : 13  (via Forth Road Bridge)
+  Stirling   — Perth         : 35
+  Stirling   — Glasgow       : 28
+  Perth      — Dundee        : 22
+  Kirkcaldy  — Dundee        : 24
+  Glasgow    — (others...)
+
+NOTE: The assignment references the image from the textbook which
+shows these cities and approximate road distances.
+
+--------------------------------------------------------
+Dijkstra's Algorithm Trace (source = Edinburgh)
+
+Initialisation:
+  dist[Edinburgh]  = 0
+  dist[all others] = ∞
+  Priority Queue (PQ) = { (Edinburgh, 0) }
+
+--- Iteration 1: Extract min → Edinburgh (dist=0) ---
+  Relax edges from Edinburgh:
+    Stirling:    0 + 36 = 36  < ∞  → update dist[Stirling]=36
+    Perth:       0 + 44 = 44  < ∞  → update dist[Perth]=44
+    Kirkcaldy:   0 + 13 = 13  < ∞  → update dist[Kirkcaldy]=13
+
+  PQ: { (Kirkcaldy,13), (Stirling,36), (Perth,44) }
+  distTo: Edinburgh=0, Kirkcaldy=13, Stirling=36, Perth=44,
+          Dundee=∞, Glasgow=∞
+
+--- Iteration 2: Extract min → Kirkcaldy (dist=13) ---
+  Relax edges from Kirkcaldy:
+    Edinburgh:  13 + 13 = 26  > 0  → no update (Edinburgh settled)
+    Dundee:     13 + 24 = 37  < ∞  → update dist[Dundee]=37
+                                      edgeTo[Dundee]=Kirkcaldy
+
+  PQ: { (Stirling,36), (Dundee,37), (Perth,44) }
+  distTo: Edinburgh=0, Kirkcaldy=13, Stirling=36,
+          Dundee=37, Perth=44
+
+--- Iteration 3: Extract min → Stirling (dist=36) ---
+  Relax edges from Stirling:
+    Edinburgh:  36 + 36 = 72  > 0  → no update
+    Perth:      36 + 35 = 71  > 44 → no update (Perth already 44)
+    Glasgow:    36 + 28 = 64  < ∞  → update dist[Glasgow]=64
+
+  PQ: { (Dundee,37), (Perth,44), (Glasgow,64) }
+
+--- Iteration 4: Extract min → Dundee (dist=37) ---
+  Dundee is our DESTINATION → STOP.
+
+--------------------------------------------------------
+RESULT
+
+Shortest path: Edinburgh → Kirkcaldy → Dundee
+Total distance: 13 + 24 = 37 miles
+
+Path reconstruction (edgeTo[]):
+  edgeTo[Kirkcaldy] = Edinburgh
+  edgeTo[Dundee]    = Kirkcaldy
+
+Shortest path: Edinburgh → Kirkcaldy → Dundee (37 miles)
+
+NOTE: The direct-via-Perth route would be:
+  Edinburgh → Perth → Dundee = 44 + 22 = 66 miles  (longer)
+
+So the Kirkcaldy route across the Forth Road Bridge is significantly
+shorter.
+
+--------------------------------------------------------
+Summary Table of Settled Distances:
+
+  Node          Settled dist (miles)   via
+  -----------   --------------------   ------------------
+  Edinburgh     0                      (source)
+  Kirkcaldy     13                     Edinburgh
+  Stirling      36                     Edinburgh
+  Dundee        37  ← SHORTEST         Edinburgh→Kirkcaldy
+  Perth         44                     Edinburgh
+  Glasgow       64                     Stirling
