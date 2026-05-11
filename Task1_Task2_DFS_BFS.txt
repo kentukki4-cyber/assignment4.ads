@@ -1,0 +1,166 @@
+========================================================
+  ADS Assignment 4 – Graph Traversals
+  Task 1: DFS Trace  |  Task 2: BFS Trace
+========================================================
+
+Graph adjacency lists (source order matters for tracing):
+  A: C B D
+  B: A C E G
+  C: A B D
+  D: C A
+  E: G F B
+  F: G E
+  G: F B
+
+--------------------------------------------------------
+TASK 1 – Depth-First Search (DFS) from source A
+(Following Sedgewick & Wayne, Algorithms 4th ed., p. 537)
+
+Algorithm recap:
+  dfs(G, v):
+    mark v as visited
+    for each w in G.adj(v):
+      if w is NOT visited:
+        dfs(G, w)
+
+Trace (marked[] array tracks visited nodes):
+
+Step 1:  Call dfs(A)
+         Mark A. Adjacency of A: [C, B, D]
+         → First unvisited neighbour: C → recurse dfs(C)
+
+Step 2:  Call dfs(C)
+         Mark C. Adjacency of C: [A, B, D]
+         → A is already visited, skip.
+         → First unvisited: B → recurse dfs(B)
+
+Step 3:  Call dfs(B)
+         Mark B. Adjacency of B: [A, C, E, G]
+         → A visited, skip.
+         → C visited, skip.
+         → First unvisited: E → recurse dfs(E)
+
+Step 4:  Call dfs(E)
+         Mark E. Adjacency of E: [G, F, B]
+         → First unvisited: G → recurse dfs(G)
+
+Step 5:  Call dfs(G)
+         Mark G. Adjacency of G: [F, B]
+         → First unvisited: F → recurse dfs(F)
+
+Step 6:  Call dfs(F)
+         Mark F. Adjacency of F: [G, E]
+         → G visited, skip.
+         → E visited, skip.
+         → No unvisited neighbours. Return to dfs(G).
+
+Step 7:  Back in dfs(G): B is visited? No → recurse dfs(B)?
+         Wait — B was already marked in Step 3. Skip.
+         → No more neighbours. Return to dfs(E).
+
+Step 8:  Back in dfs(E): F visited, B visited. Return to dfs(B).
+
+Step 9:  Back in dfs(B): G is now visited. Return to dfs(C).
+
+Step 10: Back in dfs(C): D is unvisited → recurse dfs(D)
+
+Step 11: Call dfs(D)
+         Mark D. Adjacency of D: [C, A]
+         → C visited, A visited. Return to dfs(C).
+
+Step 12: Back in dfs(C): all neighbours visited. Return to dfs(A).
+
+Step 13: Back in dfs(A): B visited, D visited. Done.
+
+DFS Visit Order: A → C → B → E → G → F → D
+
+edgeTo[] (parent in DFS tree):
+  C ← A
+  B ← C
+  E ← B
+  G ← E
+  F ← G
+  D ← C
+
+--------------------------------------------------------
+TASK 2 – Breadth-First Search (BFS) from source A
+(Following Sedgewick & Wayne, Algorithms 4th ed., p. 539)
+
+Algorithm recap:
+  bfs(G, s):
+    enqueue s, mark s
+    while queue not empty:
+      v = dequeue
+      for each w in G.adj(v):
+        if w is NOT visited:
+          enqueue w, mark w, distTo[w] = distTo[v]+1
+
+Trace:
+
+Initial:  Queue: [A]   Marked: {A}   distTo[A]=0
+
+--- Dequeue A (dist=0) ---
+  Adjacency of A: [C, B, D]
+  C not marked → enqueue C, mark C, distTo[C]=1
+  B not marked → enqueue B, mark B, distTo[B]=1
+  D not marked → enqueue D, mark D, distTo[D]=1
+  Queue: [C, B, D]   Marked: {A, C, B, D}
+
+--- Dequeue C (dist=1) ---
+  Adjacency of C: [A, B, D]
+  A marked, skip.
+  B marked, skip.
+  D marked, skip.
+  Queue: [B, D]   (nothing new added)
+
+--- Dequeue B (dist=1) ---
+  Adjacency of B: [A, C, E, G]
+  A marked, skip.
+  C marked, skip.
+  E not marked → enqueue E, mark E, distTo[E]=2
+  G not marked → enqueue G, mark G, distTo[G]=2
+  Queue: [D, E, G]   Marked: {A, C, B, D, E, G}
+
+--- Dequeue D (dist=1) ---
+  Adjacency of D: [C, A]
+  C marked, skip.
+  A marked, skip.
+  Queue: [E, G]   (nothing new)
+
+--- Dequeue E (dist=2) ---
+  Adjacency of E: [G, F, B]
+  G marked, skip.
+  F not marked → enqueue F, mark F, distTo[F]=3
+  B marked, skip.
+  Queue: [G, F]   Marked: {A, C, B, D, E, G, F}
+
+--- Dequeue G (dist=2) ---
+  Adjacency of G: [F, B]
+  F marked, skip.
+  B marked, skip.
+  Queue: [F]
+
+--- Dequeue F (dist=3) ---
+  Adjacency of F: [G, E]
+  G marked, skip.
+  E marked, skip.
+  Queue: []  — DONE
+
+BFS Visit Order: A → C → B → D → E → G → F
+
+Shortest distances from A (number of edges):
+  A: 0
+  C: 1
+  B: 1
+  D: 1
+  E: 2
+  G: 2
+  F: 3
+
+edgeTo[] (BFS shortest-path tree):
+  C ← A
+  B ← A
+  D ← A
+  E ← B
+  G ← B
+  F ← E
