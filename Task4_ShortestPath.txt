@@ -1,8 +1,8 @@
-========================================================
+
   ADS Assignment 4 – Graphs
   Task 4: Shortest Path – Edinburgh to Dundee
   (Scottish Road Network, Dijkstra's Algorithm)
-========================================================
+
 
 Scottish Road Network (standard textbook version):
 Vertices and weighted edges (distances in miles, approx.):
