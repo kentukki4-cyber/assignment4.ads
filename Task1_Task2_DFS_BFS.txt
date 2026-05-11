@@ -1,7 +1,7 @@
-========================================================
+
   ADS Assignment 4 – Graph Traversals
   Task 1: DFS Trace  |  Task 2: BFS Trace
-========================================================
+
 
 Graph adjacency lists (source order matters for tracing):
   A: C B D
